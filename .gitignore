@@ -1,0 +1,14 @@
+/target
+/src/it/*/target
+
+# virtual machine crash logs
+hs_err_pid*
+
+# IDE files
+.*.sw?
+.idea
+*.iml
+.settings
+.classpath
+.project
+/tags

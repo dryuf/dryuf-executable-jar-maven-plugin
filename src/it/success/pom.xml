@@ -1,0 +1,131 @@
+<!-- execute with maven test only -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>net.dryuf.maven.plugin</groupId>
+	<artifactId>dryuf-executable-jar-maven-plugin-test</artifactId>
+	<version>0.0.1</version>
+	<name>dryuf-executable-jar-maven-plugin-test</name>
+	<description>Maven plugin for creating executable jar - test</description>
+	<packaging>jar</packaging>
+
+	<properties>
+		<javac.version>1.8</javac.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+		<maven-jar-plugin.version>3.0.0</maven-jar-plugin.version>
+		<maven-shade-plugin.version>2.4.3</maven-shade-plugin.version>
+
+		<log4j.version>2.2</log4j.version>
+		<commons-io.version>2.5</commons-io.version>
+
+		<junit.version>4.11</junit.version>
+
+		<dryuf-executable-jar-maven-plugin.version>${project.version}</dryuf-executable-jar-maven-plugin.version>
+	</properties>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+				<configuration>
+					<source>${javac.version}</source>
+					<target>${javac.version}</target>
+					<compilerArgs>
+						<arg>-Xlint:all</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>${maven-jar-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>gen</id>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>package</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>${maven-shade-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+							<finalName>dryuf-executable-jar-maven-plugin-test</finalName>
+							<transformers>
+								<transformer
+									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+									<mainClass>net.dryuf.maven.plugin.executablejar.Main</mainClass>
+								</transformer>
+							</transformers>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>net.dryuf.maven.plugin</groupId>
+				<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
+				<version>${dryuf-executable-jar-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<phase>test-compile</phase>
+						<goals>
+							<goal>create-executable</goal>
+						</goals>
+						<configuration>
+							<vmParams>-Xmx16m</vmParams>
+							<input>${project.build.directory}/dryuf-executable-jar-maven-plugin-test.jar</input>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>${commons-io.version}</version>
+		</dependency>
+
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>repo.maven.org</id>
+			<name>Repo Maven</name>
+			<url>http://repo.maven.apache.org/maven2</url>
+		</repository>
+	</repositories>
+</project>
