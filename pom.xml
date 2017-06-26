@@ -26,7 +26,7 @@
 
 	<groupId>net.dryuf.maven.plugin</groupId>
 	<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-	<version>0.0.1</version>
+	<version>1.0.0</version>
 	<packaging>maven-plugin</packaging>
 	<name>dryuf-executable-jar-maven-plugin</name>
 	<url>https://github.com/dryuf/dryuf-executable-jar-maven-plugin</url>
@@ -52,10 +52,13 @@
 
 		<junit.version>4.11</junit.version>
 
+		<jackson.version>2.9.0</jackson.version>
+		<guava.version>23.0</guava.version>
 		<commons-lang3.version>3.3.2</commons-lang3.version>
 		<commons-io.version>2.5</commons-io.version>
-		<commons-compress.version>1.12</commons-compress.version>
+		<commons-compress.version>1.14</commons-compress.version>
 
+		<maven-core.version>3.3.3</maven-core.version>
 		<maven-plugin-api.version>3.3.3</maven-plugin-api.version>
 		<maven-plugin-tools.version>3.4</maven-plugin-tools.version>
 	</properties>
@@ -128,6 +131,7 @@
 						<configuration>
 							<cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
 							<cloneClean>true</cloneClean>
+							<debug>true</debug>
 							<pomIncludes>
 								<pomInclude>*/pom.xml</pomInclude>
 							</pomIncludes>
@@ -220,6 +224,11 @@
 
 		<dependency>
 			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-core</artifactId>
+			<version>${maven-core.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
 			<artifactId>maven-plugin-api</artifactId>
 			<version>${maven-plugin-api.version}</version>
 		</dependency>
@@ -229,7 +238,23 @@
 			<version>${maven-plugin-tools.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.maven</groupId>
+			<artifactId>maven-project</artifactId>
+			<version>3.0-alpha-2</version>
+		</dependency>
 
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>${guava.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -250,8 +275,8 @@
 	</dependencies>
 
 	<scm>
-		<connection>scm:git:git@github.com:dryuf/dryuf-csv-localizer-plugin.git</connection>
-		<url>https://github.com/dryuf/dryuf-csv-localizer-plugin.git</url>
+		<connection>scm:git:git@github.com:dryuf/dryuf-executable-jar-maven-plugin.git</connection>
+		<url>https://github.com/dryuf/dryuf-executable-jar-maven-plugin.git</url>
 	</scm>
 
 	<developers>

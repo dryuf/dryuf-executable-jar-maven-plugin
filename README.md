@@ -1,17 +1,17 @@
 # dryuf-executable-jar-maven-plugin
 
-Maven plugin prepending `#!/usr/bin/env java` header into jar file.
+Maven plugin aligning and uncompressing (storing) resources and optionally prepending `#!/usr/bin/env java` header into jar file.
 
 ## Usage
 
 Typical usage is as follows:
 
-`pom.xml` :
+`pom.xml` example:
 ```
 	<plugin>
 		<groupId>net.dryuf.maven.plugin</groupId>
 		<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-		<version>0.0.1</version>
+		<version>1.0.0</version>
 		<executions>
 			<execution>
 				<phase>package</phase>
@@ -19,8 +19,26 @@ Typical usage is as follows:
 					<goal>create-executable</goal>
 				</goals>
 				<configuration>
-					<header>#!/usr/bin/env java</header>   <!-- default as in example -->
-					<vmParamsarams>-Xmx10m</vmParamsarams> <!-- default empty -->
+					<noHeader>false</noHeader>                    <!-- avoid generating header, default false -->
+					<header>#!/usr/bin/env java</header>          <!-- default as in example -->
+					<vmParams>-Xmx16m</vmParams>                  <!-- default empty -->
+					<defaultResourceConfig>
+						<minimalCompress>5</minimalCompress>         <!-- minimal compression ratio to avoid storing -->
+						<keepAlignment>false</keepAlignment>         <!-- keep alignment if specified in original file -->
+						<compressedAlignment>4</compressedAlignment> <!-- align to 4 all compressed content -->
+						<storedAlignment>16</storedAlignment>        <!-- align to 16 all stored content -->
+					</defaultResourceConfig>
+					<resourceConfigs>
+						<resourceConfig>
+							<pattern>glob:**.png</pattern>  <!-- configuration for *.png files -->
+							<minimalCompress>10</minimalCompress>
+							<storedAlignment>256</storedAlignment>
+						</resourceConfig>
+					</resourceConfigs>
+					<externalResourceConfigs>                     <!-- reusable files from classpath -->
+						<externalResourceConfig>classpath:ResourceConfigs-cp.json</externalResourceConfig>
+						<externalResourceConfig>file://src/main/resources/ResourceConfigs-file.json</externalResourceConfig>
+					</externalResourceConfigs>
 					<input>${project.build.directory}/my-project-uber.jar</input> <!-- uber jar by shade plugin -->
 					<output>${project.build.directory}/my-project</output>        <!-- default input without .jar suffix -->
 				</configuration>
@@ -29,7 +47,25 @@ Typical usage is as follows:
 	</plugin>
 ```
 
-This will generate `target/my-project` executable file which will launch `java -Xmx10m` with the executable jar:
+`ResourceConfigs-cp.json` example:
+```
+{
+	"defaultResourceConfig": {
+		"minimalCompress": 5,
+		"storedAlignment": 16,
+		"compressedAlignment": 4,
+	},
+	"resourceConfigs": [
+		{
+			"pattern": "glob:**.align64",
+			"minimalCompress": 101,
+			"storedAlignment": 64,
+		}
+	]
+}
+```
+
+This will generate `target/my-project` executable file which will launch `java -Xmx10m -jar` with the executable jar.  The files will be aligned to either maven project file configuration or external file configuration:
 
 ```
 $ ./target/my-project

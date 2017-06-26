@@ -1,4 +1,4 @@
-package net.dryuf.maven.plugin.executablejar.test;
+package net.dryuf.maven.plugin.executablejar.it.header;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;

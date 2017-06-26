@@ -1,0 +1,28 @@
+{
+	"defaultResourceConfig": {
+		"minimalCompress": 5,
+		"storedAlignment": 16,
+		"compressedAlignment": 4,
+	},
+	"resourceConfigs": [
+		{
+			"pattern": "glob:**.align256",
+			"minimalCompress": 101,
+			"storedAlignment": 256,
+		},
+		{
+			"pattern": "glob:**.align512",
+			"minimalCompress": 101,
+			"storedAlignment": 512,
+		},
+		{
+			"pattern": "glob:**.stored",
+			"minimalCompress": 101,
+		},
+		{
+			"pattern": "glob:**.compressed256",
+			"minimalCompress": 0,
+			"compressedAlignment": 256,
+		}
+	]
+}
