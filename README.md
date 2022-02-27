@@ -11,7 +11,7 @@ Typical usage is as follows:
 	<plugin>
 		<groupId>net.dryuf.maven.plugin</groupId>
 		<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-		<version>1.0.0</version>
+		<version>1.1.1</version>
 		<executions>
 			<execution>
 				<phase>package</phase>
@@ -30,12 +30,19 @@ Typical usage is as follows:
 					</defaultResourceConfig>
 					<resourceConfigs>
 						<resourceConfig>
+							<pattern>glob:**</pattern>
+							<type>dir</type>                <!-- configuration for directories -->
+							<remove>true</remove>
+						</resourceConfig>
+					</resourceConfigs>
+					<resourceConfigs>
+						<resourceConfig>
 							<pattern>glob:**.png</pattern>  <!-- configuration for *.png files -->
 							<minimalCompress>10</minimalCompress>
 							<storedAlignment>256</storedAlignment>
 						</resourceConfig>
 					</resourceConfigs>
-					<externalResourceConfigs>                     <!-- reusable files from classpath -->
+					<externalResourceConfigs>                       <!-- reusable files from classpath -->
 						<externalResourceConfig>classpath:ResourceConfigs-cp.json</externalResourceConfig>
 						<externalResourceConfig>file://src/main/resources/ResourceConfigs-file.json</externalResourceConfig>
 					</externalResourceConfigs>
