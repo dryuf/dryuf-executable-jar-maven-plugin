@@ -6,21 +6,21 @@
 	},
 	"resourceConfigs": [
 		{
-			"pattern": "glob:**.align256",
+			"pattern": "ant:**/*.align256",
 			"minimalCompress": 101,
 			"storedAlignment": 256,
 		},
 		{
-			"pattern": "glob:**.align512",
+			"pattern": "ant:**/*.align512",
 			"minimalCompress": 101,
 			"storedAlignment": 512,
 		},
 		{
-			"pattern": "glob:**.stored",
+			"pattern": "ant:**/*.stored",
 			"minimalCompress": 101,
 		},
 		{
-			"pattern": "glob:**.compressed256",
+			"pattern": "ant:**/*.compressed256",
 			"minimalCompress": 0,
 			"compressedAlignment": 256,
 		}

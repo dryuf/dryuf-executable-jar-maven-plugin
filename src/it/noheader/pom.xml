@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.dryuf.maven.plugin</groupId>
-	<artifactId>dryuf-executable-jar-maven-plugin-it-alignment</artifactId>
+	<artifactId>dryuf-executable-jar-maven-plugin-it-noheader</artifactId>
 	<version>1.0.0</version>
 	<name>dryuf-executable-jar-maven-plugin-test</name>
 	<description>Maven plugin for creating executable jar - test</description>
@@ -97,7 +97,7 @@
 							<goal>create-executable</goal>
 						</goals>
 						<configuration>
-							<vmParams>-Xmx16m</vmParams>
+							<noHeader>true</noHeader>
 							<defaultResourceConfig>
 								<minimalCompress>20</minimalCompress>
 								<keepAlignment>false</keepAlignment>

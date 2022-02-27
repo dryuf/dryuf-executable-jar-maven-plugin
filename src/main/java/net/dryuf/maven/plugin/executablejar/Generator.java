@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Iterators;
 import lombok.Setter;
 import net.dryuf.maven.plugin.executablejar.concurrent.ResultSerializingExecutor;
+import net.dryuf.maven.plugin.executablejar.io.PathMatcherUtil;
 import org.apache.commons.compress.archivers.zip.ResourceAlignmentExtraField;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -22,7 +23,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
@@ -34,6 +34,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
+import java.util.stream.Stream;
 
 
 /**
@@ -107,6 +110,8 @@ public class Generator
 
 	private void enrichDefaultResourceConfig(Configuration.ResourceConfig rc, Configuration.ResourceConfig source)
 	{
+		if (defaultResourceConfig.getRemove() == null)
+			defaultResourceConfig.setRemove(source.getRemove());
 		if (defaultResourceConfig.getMinimalCompress() == null)
 			defaultResourceConfig.setMinimalCompress(source.getMinimalCompress());
 		if (defaultResourceConfig.getKeepAlignment() == null)
@@ -127,11 +132,11 @@ public class Generator
 					throw new UnsupportedOperationException("Input file entry too big: file="+zipEntry.getName()+" size="+zipEntry.getCompressedSize());
 				}
 				entry.zipEntry = zipEntry;
-				itemsExecutor.submit(() -> {
-						processEntry(entry);
-						return entry;
-					})
-					.thenAccept((v) -> maxAlignment.updateAndGet(old -> Math.max(old, entry.alignment)));
+				itemsExecutor.submit(() -> processEntry(entry))
+					.thenAccept((entry0) -> {
+						if (entry0 != null)
+							maxAlignment.updateAndGet(old -> Math.max(old, entry0.alignment));
+					});
 			});
 		}
 		catch (InterruptedException e) {
@@ -148,7 +153,7 @@ public class Generator
 		}
 
 		try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(outputStreamLow)) {
-			IOException mainEx = new IOException("Failed write output");
+			AtomicReference<IOException> mainEx = new AtomicReference<>();
 			ExecutorService writerExecutor = Executors.newSingleThreadExecutor();
 			try (ResultSerializingExecutor itemsExecutor = new ResultSerializingExecutor()) {
 				Iterators.forEnumeration(inputZip.getEntriesInPhysicalOrder()).forEachRemaining((ZipArchiveEntry zipEntry) -> {
@@ -157,15 +162,17 @@ public class Generator
 						throw new UnsupportedOperationException("Input file entry too big: file="+zipEntry.getName()+" size="+zipEntry.getCompressedSize());
 					}
 					entry.zipEntry = zipEntry;
-					itemsExecutor.submit(() -> {
-							processEntry(entry);
-							return entry;
+					itemsExecutor.submit(() ->processEntry(entry))
+						.thenAccept((entry0) -> {
+							if (entry0 != null)
+								writeEntry(inputZip, outputStream, entry0);
 						})
-						.thenAccept((v) -> writeEntry(inputZip, outputStream, entry))
 						.exceptionally((Throwable ex) -> {
-							synchronized (mainEx) {
-								mainEx.addSuppressed(ex);
+							if (mainEx.get() == null) {
+								if (mainEx.compareAndSet(null, new IOException("Failed to process jar", ex)))
+									return null;
 							}
+							mainEx.get().addSuppressed(ex);
 							return null;
 						});
 				});
@@ -174,8 +181,8 @@ public class Generator
 				while (!writerExecutor.isTerminated()) {
 					writerExecutor.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
 				}
-				if (mainEx.getSuppressed().length != 0)
-					throw mainEx;
+				if (mainEx.get() != null)
+					throw mainEx.get();
 			}
 		}
 		catch (InterruptedException e) {
@@ -183,38 +190,59 @@ public class Generator
 		}
 	}
 
-	private void processEntry(FileEntry entry)
+	private FileEntry processEntry(FileEntry entry)
 	{
 		ZipArchiveEntry zipEntry = entry.zipEntry;
 		Path path = Paths.get(zipEntry.getName());
+		Configuration.FileType fileType = getZipFileType(zipEntry);
 
 		Configuration.ResourceConfig rcConfig = new Configuration.ResourceConfig();
-		rcConfig.setMinimalCompress(resourceConfigs.entrySet().stream()
-			.filter(e -> e.getValue().getMinimalCompress() != null)
-			.filter(e -> e.getKey().matches(path))
-			.map(e -> e.getValue().getMinimalCompress())
+		rcConfig.setRemove(searchResourceConfig(
+			resourceConfigs,
+			path,
+			fileType,
+			Configuration.ResourceConfig::getRemove
+		)
+			.findFirst()
+			.orElseGet(() -> defaultResourceConfig.getRemove()));
+		rcConfig.setMinimalCompress(searchResourceConfig(
+			resourceConfigs,
+			path,
+			fileType,
+			Configuration.ResourceConfig::getMinimalCompress
+		)
 			.findFirst()
 			.orElseGet(() -> defaultResourceConfig.getMinimalCompress()));
-		rcConfig.setKeepAlignment(resourceConfigs.entrySet().stream()
-			.filter(e -> e.getValue().getKeepAlignment() != null)
-			.filter(e -> e.getKey().matches(path))
-			.map(e -> e.getValue().getKeepAlignment())
+		rcConfig.setKeepAlignment(searchResourceConfig(
+			resourceConfigs,
+			path,
+			fileType,
+			Configuration.ResourceConfig::getKeepAlignment
+		)
 			.findFirst()
 			.orElseGet(() -> defaultResourceConfig.getKeepAlignment()));
-		rcConfig.setCompressedAlignment(resourceConfigs.entrySet().stream()
-			.filter(e -> e.getValue().getCompressedAlignment() != null)
-			.filter(e -> e.getKey().matches(path))
-			.map(e -> Optional.ofNullable(e.getValue().getCompressedAlignment()).orElse(0))
+		rcConfig.setCompressedAlignment(searchResourceConfig(
+			resourceConfigs,
+			path,
+			fileType,
+			Configuration.ResourceConfig::getCompressedAlignment
+		)
 			.filter(v -> v != 0)
 			.findFirst()
 			.orElseGet(() -> defaultResourceConfig.getCompressedAlignment()));
-		rcConfig.setStoredAlignment(resourceConfigs.entrySet().stream()
-			.filter(e -> e.getValue().getStoredAlignment() != null)
-			.filter(e -> e.getKey().matches(path))
-			.map(e -> Optional.ofNullable(e.getValue().getStoredAlignment()).orElse(0))
+		rcConfig.setStoredAlignment(searchResourceConfig(
+			resourceConfigs,
+			path,
+			fileType,
+			Configuration.ResourceConfig::getStoredAlignment
+		)
 			.filter(v -> v != 0)
 			.findFirst()
 			.orElseGet(() -> defaultResourceConfig.getStoredAlignment()));
+
+		if (rcConfig.getRemove()) {
+			return null;
+		}
 
 		if (getCompressionRatio(zipEntry.getCompressedSize(), zipEntry.getSize()) < rcConfig.getMinimalCompress()) {
 			entry.doStore = true;
@@ -240,6 +268,8 @@ public class Generator
 			throw new IllegalArgumentException("Invalid alignment: file="+zipEntry.getName()+" alignment="+alignment);
 		}
 		entry.alignment = alignment;
+
+		return entry;
 	}
 
 	private void writeEntry(ZipFile inputZip, ZipArchiveOutputStream outputStream, FileEntry entry)
@@ -280,7 +310,7 @@ public class Generator
 			throw new IllegalArgumentException("Invalid uncompressedAlignment: "+rc.getStoredAlignment());
 		}
 		resourceConfigs.putIfAbsent(
-			FileSystems.getDefault().getPathMatcher(rc.getPattern()),
+			PathMatcherUtil.createMatcher(rc.getPattern()),
 			rc
 		);
 	}
@@ -296,6 +326,35 @@ public class Generator
 		}
 		else {
 			throw new IOException("Unsupported protocol, only classpath is supported: file="+name);
+		}
+	}
+
+	private <T> Stream<T> searchResourceConfig(
+		Map<PathMatcher, Configuration.ResourceConfig> resourceConfigs,
+		Path path,
+		Configuration.FileType fileType,
+		Function<Configuration.ResourceConfig, T> valueMapper
+	)
+	{
+		return resourceConfigs.entrySet().stream()
+			.filter(e -> valueMapper.apply(e.getValue()) != null)
+			.filter(e -> e.getKey().matches(path))
+			.filter(e -> Optional.ofNullable(e.getValue().getType())
+				.map(ft -> ft == fileType).orElse(true)
+			)
+			.map(e -> valueMapper.apply(e.getValue()));
+	}
+
+	private Configuration.FileType getZipFileType(ZipArchiveEntry entry)
+	{
+		if (entry.isDirectory()) {
+			return Configuration.FileType.dir;
+		}
+		else if (entry.isUnixSymlink()) {
+			return Configuration.FileType.symlink;
+		}
+		else {
+			return Configuration.FileType.file;
 		}
 	}
 
@@ -325,6 +384,7 @@ public class Generator
 	private static final Configuration.ResourceConfig DEFAULT_RESOURCE_CONFIG = new Configuration.ResourceConfig();
 
 	static {
+		DEFAULT_RESOURCE_CONFIG.setRemove(false);
 		DEFAULT_RESOURCE_CONFIG.setKeepAlignment(true);
 		DEFAULT_RESOURCE_CONFIG.setMinimalCompress(3);
 		DEFAULT_RESOURCE_CONFIG.setCompressedAlignment(0);

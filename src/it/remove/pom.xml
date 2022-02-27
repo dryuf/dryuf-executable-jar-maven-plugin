@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.dryuf.maven.plugin</groupId>
-	<artifactId>dryuf-executable-jar-maven-plugin-it-alignment</artifactId>
+	<artifactId>dryuf-executable-jar-maven-plugin-it-remove</artifactId>
 	<version>1.0.0</version>
 	<name>dryuf-executable-jar-maven-plugin-test</name>
 	<description>Maven plugin for creating executable jar - test</description>
@@ -97,37 +97,12 @@
 							<goal>create-executable</goal>
 						</goals>
 						<configuration>
-							<vmParams>-Xmx16m</vmParams>
-							<defaultResourceConfig>
-								<minimalCompress>20</minimalCompress>
-								<keepAlignment>false</keepAlignment>
-								<compressedAlignment>1</compressedAlignment>
-								<storedAlignment>16</storedAlignment>
-							</defaultResourceConfig>
+							<noHeader>true</noHeader>
 							<resourceConfigs>
 								<resourceConfig>
-									<pattern>ant:**/*.align256</pattern>
-									<minimalCompress>100</minimalCompress>
-									<compressedAlignment>1</compressedAlignment>
-									<storedAlignment>256</storedAlignment>
-								</resourceConfig>
-								<resourceConfig>
-									<pattern>ant:**/*.align512</pattern>
-									<minimalCompress>100</minimalCompress>
-									<compressedAlignment>1</compressedAlignment>
-									<storedAlignment>512</storedAlignment>
-								</resourceConfig>
-								<resourceConfig>
-									<pattern>ant:**/*.align*</pattern>
-									<minimalCompress>100</minimalCompress>
-									<compressedAlignment>1</compressedAlignment>
-									<storedAlignment>64</storedAlignment>
-								</resourceConfig>
-								<resourceConfig>
-									<pattern>ant:**/*.compressed256</pattern>
-									<minimalCompress>0</minimalCompress>
-									<compressedAlignment>256</compressedAlignment>
-									<storedAlignment>1</storedAlignment>
+									<pattern>ant:**</pattern>
+									<type>dir</type>
+									<remove>true</remove>
 								</resourceConfig>
 							</resourceConfigs>
 							<input>${project.build.directory}/dryuf-executable-jar-maven-plugin-test.jar</input>

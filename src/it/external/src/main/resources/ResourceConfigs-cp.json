@@ -6,7 +6,7 @@
 	},
 	"resourceConfigs": [
 		{
-			"pattern": "glob:**.align64",
+			"pattern": "ant:**/*.align64",
 			"minimalCompress": 101,
 			"storedAlignment": 64,
 		}

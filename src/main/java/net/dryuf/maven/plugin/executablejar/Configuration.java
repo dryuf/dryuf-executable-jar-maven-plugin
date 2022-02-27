@@ -36,6 +36,10 @@ public class Configuration
 	{
 		private String			pattern;
 
+		private FileType		type;
+
+		private Boolean			remove;
+
 		/** Minimal compression ratio to keep as compressed (0-100, 0 means no compression, 100 complete compression). */
 		private Integer			minimalCompress;
 
@@ -55,5 +59,12 @@ public class Configuration
 		ResourceConfig defaultResourceConfig;
 
 		List<ResourceConfig> resourceConfigs;
+	}
+
+	enum FileType
+	{
+		file,
+		dir,
+		symlink,
 	}
 }
