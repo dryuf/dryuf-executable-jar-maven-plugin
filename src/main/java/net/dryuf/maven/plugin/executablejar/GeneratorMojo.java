@@ -71,7 +71,7 @@ public class GeneratorMojo extends AbstractMojo
 	protected boolean		noHeader = false;
 
 	/** Script header. */
-	@Parameter(required = false, defaultValue = "#!/usr/bin/env java")
+	@Parameter(required = false, defaultValue = "#!/usr/bin/env -S java")
 	protected String		header;
 
 	/** VM parameters. */

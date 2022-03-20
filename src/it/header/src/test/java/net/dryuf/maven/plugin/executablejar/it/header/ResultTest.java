@@ -28,7 +28,7 @@ public class ResultTest
 			new FileInputStream("target/dryuf-executable-jar-maven-plugin-test"),
 			StandardCharsets.UTF_8))) {
 			String line = exec.readLine();
-			Assert.assertEquals("#!/usr/bin/env java -Xmx16m -jar", line);
+			Assert.assertEquals("#!/usr/bin/env -S java -Xmx16m -jar", line);
 		}
 	}
 }

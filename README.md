@@ -11,7 +11,7 @@ Typical usage is as follows:
 	<plugin>
 		<groupId>net.dryuf.maven.plugin</groupId>
 		<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-		<version>1.1.1</version>
+		<version>1.2.0</version>
 		<executions>
 			<execution>
 				<phase>package</phase>
@@ -19,35 +19,47 @@ Typical usage is as follows:
 					<goal>create-executable</goal>
 				</goals>
 				<configuration>
-					<noHeader>false</noHeader>                    <!-- avoid generating header, default false -->
-					<header>#!/usr/bin/env java</header>          <!-- default as in example -->
-					<vmParams>-Xmx16m</vmParams>                  <!-- default empty -->
+					<!-- avoid generating header, default false -->
+					<noHeader>false</noHeader>
+					<!-- executable header, default as in example -->
+					<header>#!/usr/bin/env -S java</header>
+					<!-- additional arguments, default empty -->
+					<vmParams>-Xmx16m</vmParams>
 					<defaultResourceConfig>
-						<minimalCompress>5</minimalCompress>         <!-- minimal compression ratio to avoid storing -->
-						<keepAlignment>false</keepAlignment>         <!-- keep alignment if specified in original file -->
-						<compressedAlignment>4</compressedAlignment> <!-- align to 4 all compressed content -->
-						<storedAlignment>16</storedAlignment>        <!-- align to 16 all stored content -->
+						<!-- minimal compression ratio to avoid storing -->
+						<minimalCompress>5</minimalCompress>
+						<!-- keep alignment if specified in original file -->
+						<keepAlignment>false</keepAlignment>
+						<!-- align to 4 all compressed content -->
+						<compressedAlignment>4</compressedAlignment>
+						<!-- align to 16 all stored content -->
+						<storedAlignment>16</storedAlignment>
 					</defaultResourceConfig>
 					<resourceConfigs>
 						<resourceConfig>
 							<pattern>glob:**</pattern>
-							<type>dir</type>                <!-- configuration for directories -->
+							<!-- configuration for directories -->
+							<type>dir</type>
 							<remove>true</remove>
 						</resourceConfig>
 					</resourceConfigs>
 					<resourceConfigs>
 						<resourceConfig>
-							<pattern>glob:**.png</pattern>  <!-- configuration for *.png files -->
+							<!-- configuration for *.png files -->
+							<pattern>glob:**.png</pattern>
 							<minimalCompress>10</minimalCompress>
 							<storedAlignment>256</storedAlignment>
 						</resourceConfig>
 					</resourceConfigs>
-					<externalResourceConfigs>                       <!-- reusable files from classpath -->
+					<!-- reusable configuration files from classpath -->
+					<externalResourceConfigs>
 						<externalResourceConfig>classpath:ResourceConfigs-cp.json</externalResourceConfig>
 						<externalResourceConfig>file://src/main/resources/ResourceConfigs-file.json</externalResourceConfig>
 					</externalResourceConfigs>
-					<input>${project.build.directory}/my-project-uber.jar</input> <!-- uber jar by shade plugin -->
-					<output>${project.build.directory}/my-project</output>        <!-- default input without .jar suffix -->
+					<!-- uber jar by shade plugin -->
+					<input>${project.build.directory}/my-project-uber.jar</input>
+					<!-- default input without .jar suffix -->
+					<output>${project.build.directory}/my-project</output>
 				</configuration>
 			</execution>
 		</executions>

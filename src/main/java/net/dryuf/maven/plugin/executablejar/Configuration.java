@@ -14,7 +14,7 @@ import java.util.List;
 public class Configuration
 {
 	/** Script header. */
-	protected String		header = "#!/usr/bin/env java";
+	protected String		header = "#!/usr/bin/env -S java";
 
 	/** VM parameters. */
 	protected String		vmParams;
