@@ -1,7 +1,7 @@
 package net.dryuf.maven.plugin.executablejar.concurrent;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 import java.nio.file.FileSystems;
 import java.nio.file.PathMatcher;

@@ -2,10 +2,13 @@ package net.dryuf.maven.plugin.executablejar;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
+import com.google.common.collect.Streams;
 import lombok.Setter;
 import net.dryuf.maven.plugin.executablejar.concurrent.ResultSerializingExecutor;
 import net.dryuf.maven.plugin.executablejar.io.PathMatcherUtil;
+import net.dryuf.maven.plugin.executablejar.io.StringPathComparator;
 import org.apache.commons.compress.archivers.zip.ResourceAlignmentExtraField;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
@@ -27,6 +30,8 @@ import java.nio.file.Path;
 import java.nio.file.PathMatcher;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -36,6 +41,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -156,7 +162,13 @@ public class Generator
 			AtomicReference<IOException> mainEx = new AtomicReference<>();
 			ExecutorService writerExecutor = Executors.newSingleThreadExecutor();
 			try (ResultSerializingExecutor itemsExecutor = new ResultSerializingExecutor()) {
-				Iterators.forEnumeration(inputZip.getEntriesInPhysicalOrder()).forEachRemaining((ZipArchiveEntry zipEntry) -> {
+				Iterator<ZipArchiveEntry> entries = Iterators.forEnumeration(inputZip.getEntriesInPhysicalOrder());
+				if (configuration.isSort()) {
+					entries = Streams.stream(entries)
+							.sorted(Comparator.comparing(ZipArchiveEntry::getName, StringPathComparator.INSTANCE))
+							.collect(ImmutableList.toImmutableList()).iterator();
+				}
+				entries.forEachRemaining((ZipArchiveEntry zipEntry) -> {
 					FileEntry entry = new FileEntry();
 					if (zipEntry.getCompressedSize() >= Integer.MAX_VALUE) {
 						throw new UnsupportedOperationException("Input file entry too big: file="+zipEntry.getName()+" size="+zipEntry.getCompressedSize());

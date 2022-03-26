@@ -26,7 +26,7 @@
 
 	<groupId>net.dryuf.maven.plugin</groupId>
 	<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-	<version>1.2.0</version>
+	<version>1.2.1</version>
 	<packaging>maven-plugin</packaging>
 	<name>dryuf-executable-jar-maven-plugin</name>
 	<url>https://github.com/dryuf/dryuf-executable-jar-maven-plugin</url>
@@ -48,7 +48,8 @@
 
 		<lombok.version>1.18.22</lombok.version>
 
-		<junit.version>4.13.2</junit.version>
+		<testng.version>7.3.0</testng.version>
+		<assertj.version>3.22.0</assertj.version>
 
 		<plexus-utils.version>3.4.1</plexus-utils.version>
 		<jackson.version>2.13.1</jackson.version>
@@ -271,9 +272,16 @@
 		</dependency>
 
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.assertj</groupId>
+			<artifactId>assertj-core</artifactId>
+			<version>${assertj.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -288,6 +296,7 @@
 			<name>Zbynek Vyskovsky</name>
 			<id>kvr000</id>
 			<email>kvr000@gmail.com</email>
+			<url>https://github.com/kvr000/</url>
 		</developer>
 	</developers>
 

@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.dryuf.maven.plugin</groupId>
-	<artifactId>dryuf-executable-jar-maven-plugin-it-remove</artifactId>
+	<artifactId>dryuf-executable-jar-maven-plugin-it-sort</artifactId>
 	<version>1.2.1</version>
 	<name>dryuf-executable-jar-maven-plugin-test</name>
 	<description>Maven plugin for creating executable jar - test</description>
@@ -64,29 +64,6 @@
 			</plugin>
 
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>${maven-shade-plugin.version}</version>
-				<executions>
-					<execution>
-						<phase>test-compile</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<finalName>dryuf-executable-jar-maven-plugin-test</finalName>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>net.dryuf.maven.plugin.executablejar.Main</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
 				<groupId>net.dryuf.maven.plugin</groupId>
 				<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
 				<version>${dryuf-executable-jar-maven-plugin.version}</version>
@@ -98,14 +75,9 @@
 						</goals>
 						<configuration>
 							<noHeader>true</noHeader>
-							<resourceConfigs>
-								<resourceConfig>
-									<pattern>ant:**</pattern>
-									<type>dir</type>
-									<remove>true</remove>
-								</resourceConfig>
-							</resourceConfigs>
-							<input>${project.build.directory}/dryuf-executable-jar-maven-plugin-test.jar</input>
+							<sort>true</sort>
+							<input>${project.build.directory}/dryuf-executable-jar-maven-plugin-it-sort-${project.version}.jar</input>
+							<output>${project.build.directory}/output.jar</output>
 						</configuration>
 					</execution>
 				</executions>

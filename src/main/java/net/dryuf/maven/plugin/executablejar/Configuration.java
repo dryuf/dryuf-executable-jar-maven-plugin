@@ -19,10 +19,16 @@ public class Configuration
 	/** VM parameters. */
 	protected String		vmParams;
 
+	/** Sorts the entries by path and name. */
+	protected boolean		sort;
+
+	/** Default Resource configuration. */
 	protected ResourceConfig	defaultResourceConfig;
 
+	/** Resource configuration for specific file pattern. */
 	protected List<ResourceConfig>	resourceConfigs = new ArrayList<>();
 
+	/** Resource configuration stored in external JSON files. */
 	protected List<String>		externalResourceConfigs;
 
 	/** Input jar file. */
@@ -34,10 +40,13 @@ public class Configuration
 	@Data
 	public static class ResourceConfig
 	{
+		/** File pattern, can start with ant: , glob: , regex: for specific pattern syntax. */
 		private String			pattern;
 
+		/** Type of file, can be either dir, symlink or file (default). */
 		private FileType		type;
 
+		/** Indicator whether to remove the entry. */
 		private Boolean			remove;
 
 		/** Minimal compression ratio to keep as compressed (0-100, 0 means no compression, 100 complete compression). */

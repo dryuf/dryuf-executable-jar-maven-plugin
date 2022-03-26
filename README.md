@@ -11,7 +11,7 @@ Typical usage is as follows:
 	<plugin>
 		<groupId>net.dryuf.maven.plugin</groupId>
 		<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-		<version>1.2.0</version>
+		<version>1.2.1</version>
 		<executions>
 			<execution>
 				<phase>package</phase>
@@ -25,6 +25,10 @@ Typical usage is as follows:
 					<header>#!/usr/bin/env -S java</header>
 					<!-- additional arguments, default empty -->
 					<vmParams>-Xmx16m</vmParams>
+					<!-- sort files by directory structure and file names in output file -->
+					<sort>true</sort>
+					<!-- default configuration -->
+					<!-- each of the fields is optional in any level of configuration, if missing the next matching is chosen -->
 					<defaultResourceConfig>
 						<!-- minimal compression ratio to avoid storing -->
 						<minimalCompress>5</minimalCompress>
@@ -84,7 +88,7 @@ Typical usage is as follows:
 }
 ```
 
-This will generate `target/my-project` executable file which will launch `java -Xmx10m -jar` with the executable jar.  The files will be aligned to either maven project file configuration or external file configuration:
+This will generate `target/my-project` executable file which will launch `java -Xmx16m -jar` with the executable jar.  The files will be aligned to either maven project file configuration or external file configuration:
 
 ```
 $ ./target/my-project

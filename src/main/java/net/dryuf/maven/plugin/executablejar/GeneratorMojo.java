@@ -35,6 +35,7 @@ public class GeneratorMojo extends AbstractMojo
 		Configuration configuration = new Configuration();
 		configuration.setHeader(noHeader ? null : header);
 		configuration.setVmParams(vmParams);
+		configuration.setSort(sort);
 		configuration.setDefaultResourceConfig(defaultResourceConfig);
 		configuration.setResourceConfigs(resourceConfigs);
 		configuration.setExternalResourceConfigs(externalResourceConfigs);
@@ -78,12 +79,19 @@ public class GeneratorMojo extends AbstractMojo
 	@Parameter(required = false)
 	protected String		vmParams;
 
+	/** Sorts the entries by path and name. */
+	@Parameter(required = false)
+	protected boolean		sort;
+
+	/** Default Resource configuration. */
 	@Parameter(required = false)
 	protected Configuration.ResourceConfig defaultResourceConfig = new Configuration.ResourceConfig();
 
+	/** Resource configuration for specific file pattern. */
 	@Parameter(required = false)
 	protected List<Configuration.ResourceConfig> resourceConfigs = new ArrayList<>();
 
+	/** Resource configuration stored in external JSON files. */
 	@Parameter(required = false)
 	protected List<String>		externalResourceConfigs;
 

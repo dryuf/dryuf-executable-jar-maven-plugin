@@ -1,6 +1,6 @@
 package net.dryuf.maven.plugin.executablejar.concurrent;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.util.concurrent.ThreadLocalRandom;
 
