@@ -11,7 +11,7 @@ Typical usage is as follows:
 	<plugin>
 		<groupId>net.dryuf.maven.plugin</groupId>
 		<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-		<version>1.2.1</version>
+		<version>1.2.2</version>
 		<executions>
 			<execution>
 				<phase>package</phase>

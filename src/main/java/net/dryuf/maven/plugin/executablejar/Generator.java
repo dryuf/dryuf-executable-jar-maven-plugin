@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Streams;
 import lombok.Setter;
-import net.dryuf.maven.plugin.executablejar.concurrent.ResultSerializingExecutor;
+import net.dryuf.concurrent.executor.ResultSerializingExecutor;
 import net.dryuf.maven.plugin.executablejar.io.PathMatcherUtil;
 import net.dryuf.maven.plugin.executablejar.io.StringPathComparator;
 import org.apache.commons.compress.archivers.zip.ResourceAlignmentExtraField;
@@ -41,7 +41,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
