@@ -2,6 +2,7 @@
 
 Maven plugin aligning and uncompressing (storing) resources and optionally prepending `#!/usr/bin/env java` header into jar file.
 
+
 ## Usage
 
 Typical usage is as follows:
@@ -11,7 +12,7 @@ Typical usage is as follows:
 	<plugin>
 		<groupId>net.dryuf.maven.plugin</groupId>
 		<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-		<version>1.2.2</version>
+		<version>1.2.3</version>
 		<executions>
 			<execution>
 				<phase>package</phase>

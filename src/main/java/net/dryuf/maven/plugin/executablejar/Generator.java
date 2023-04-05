@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Streams;
 import lombok.Setter;
-import net.dryuf.concurrent.executor.ResultSerializingExecutor;
+import net.dryuf.concurrent.executor.ResultSequencingExecutor;
 import net.dryuf.maven.plugin.executablejar.io.PathMatcherUtil;
 import net.dryuf.maven.plugin.executablejar.io.StringPathComparator;
 import org.apache.commons.compress.archivers.zip.ResourceAlignmentExtraField;
@@ -130,7 +130,7 @@ public class Generator
 	private void processJar(ZipFile inputZip, OutputStream outputStreamLow) throws IOException
 	{
 		final AtomicInteger maxAlignment = new AtomicInteger();
-		try (ResultSerializingExecutor itemsExecutor = new ResultSerializingExecutor()) {
+		try (ResultSequencingExecutor itemsExecutor = new ResultSequencingExecutor()) {
 			Iterators.forEnumeration(inputZip.getEntriesInPhysicalOrder()).forEachRemaining((ZipArchiveEntry zipEntry) -> {
 				FileEntry entry = new FileEntry();
 				if (zipEntry.getCompressedSize() >= Integer.MAX_VALUE) {
@@ -143,9 +143,6 @@ public class Generator
 							maxAlignment.updateAndGet(old -> Math.max(old, entry0.alignment));
 					});
 			});
-		}
-		catch (InterruptedException e) {
-			throw new RuntimeException(e);
 		}
 		if (configuration.getHeader() != null && !configuration.getHeader().isEmpty()) {
 			byte[] header = (configuration.getHeader()+
@@ -160,7 +157,7 @@ public class Generator
 		try (ZipArchiveOutputStream outputStream = new ZipArchiveOutputStream(outputStreamLow)) {
 			AtomicReference<IOException> mainEx = new AtomicReference<>();
 			ExecutorService writerExecutor = Executors.newSingleThreadExecutor();
-			try (ResultSerializingExecutor itemsExecutor = new ResultSerializingExecutor()) {
+			try (ResultSequencingExecutor itemsExecutor = new ResultSequencingExecutor()) {
 				Iterator<ZipArchiveEntry> entries = Iterators.forEnumeration(inputZip.getEntriesInPhysicalOrder());
 				if (configuration.isSort()) {
 					entries = Streams.stream(entries)
