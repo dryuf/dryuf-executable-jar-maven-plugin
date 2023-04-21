@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Streams;
 import lombok.Setter;
-import net.dryuf.concurrent.executor.ResultSequencingExecutor;
+import net.dryuf.base.concurrent.executor.ResultSequencingExecutor;
 import net.dryuf.maven.plugin.executablejar.io.PathMatcherUtil;
 import net.dryuf.maven.plugin.executablejar.io.StringPathComparator;
 import org.apache.commons.compress.archivers.zip.ResourceAlignmentExtraField;
