@@ -12,7 +12,7 @@ Typical usage is as follows:
 	<plugin>
 		<groupId>net.dryuf.maven.plugin</groupId>
 		<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-		<version>1.2.3</version>
+		<version>1.2.5</version>
 		<executions>
 			<execution>
 				<phase>package</phase>

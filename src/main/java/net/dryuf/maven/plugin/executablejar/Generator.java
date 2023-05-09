@@ -137,10 +137,12 @@ public class Generator
 					throw new UnsupportedOperationException("Input file entry too big: file="+zipEntry.getName()+" size="+zipEntry.getCompressedSize());
 				}
 				entry.zipEntry = zipEntry;
-				itemsExecutor.submit(() -> processEntry(entry))
-					.thenAccept((entry0) -> {
+				itemsExecutor.submit(
+					() -> processEntry(entry),
+					(entry0) -> {
 						if (entry0 != null)
 							maxAlignment.updateAndGet(old -> Math.max(old, entry0.alignment));
+						return null;
 					});
 			});
 		}
@@ -170,10 +172,12 @@ public class Generator
 						throw new UnsupportedOperationException("Input file entry too big: file="+zipEntry.getName()+" size="+zipEntry.getCompressedSize());
 					}
 					entry.zipEntry = zipEntry;
-					itemsExecutor.submit(() ->processEntry(entry))
-						.thenAccept((entry0) -> {
+					itemsExecutor.submit(
+						() ->processEntry(entry),
+						(entry0) -> {
 							if (entry0 != null)
 								writeEntry(inputZip, outputStream, entry0);
+							return null;
 						})
 						.exceptionally((Throwable ex) -> {
 							if (mainEx.get() == null) {

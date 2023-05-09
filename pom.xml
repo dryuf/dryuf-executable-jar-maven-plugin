@@ -26,7 +26,7 @@
 
 	<groupId>net.dryuf.maven.plugin</groupId>
 	<artifactId>dryuf-executable-jar-maven-plugin</artifactId>
-	<version>1.2.4</version>
+	<version>1.2.5</version>
 	<packaging>maven-plugin</packaging>
 	<name>dryuf-executable-jar-maven-plugin</name>
 	<url>https://github.com/dryuf/dryuf-executable-jar-maven-plugin</url>
@@ -57,7 +57,7 @@
 		<commons-lang3.version>3.12.0</commons-lang3.version>
 		<commons-io.version>2.11.0</commons-io.version>
 		<commons-compress.version>1.21</commons-compress.version>
-		<dryuf-base.version>1.7.3</dryuf-base.version>
+		<dryuf-base.version>1.8.0</dryuf-base.version>
 
 		<maven-core.version>3.8.4</maven-core.version>
 		<maven-plugin-api.version>3.8.4</maven-plugin-api.version>
